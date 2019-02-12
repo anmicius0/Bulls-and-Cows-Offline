@@ -1,4 +1,8 @@
 import random
+import sqlite3
+import datetime
+
+conn = sqlite3.connect('score.db')
 
 def check_input(guess):
     """
@@ -9,9 +13,11 @@ def check_input(guess):
     """
     result = True
 
+    # if the input is not 4-dig
     if len(guess) != 4:
         result = False
 
+    # if input is not numerical
     try:
         temp = int(guess)
     except ValueError:
@@ -48,38 +54,71 @@ def check_answer(guess, answer):
 
     return a,b
 
-def generate_answer():
-    answer = str(random.randint(1000, 9999))
-
 def game():
+    """
+    Main part of game
+    """
     answer = str(random.randint(1000, 9999))
     guess = str(input('Guess a number: '))
+    counter = 0
 
-    print(answer)
-    
-    
+    # user will  get out the loop only when they have the right answer
     while guess != answer:
-
+        
         # check user's input
         while not check_input(guess):
             print("Invalid input (4-dig number)")
             guess = str(input('Try another number: '))
 
         # get the numbet of a, b
+        counter += 1
         a, b = check_answer(guess, answer)
         print("{a}A{b}B".format(a=a, b=b))
         guess = str(input('Try another number: '))
     
     print("Congragulation!")
+
+    # record game score
+    try:
+        record(counter)
+    except:
+        pass
+
     again()
 
 def again():
+    """
+    Do after game choices (ex: play again)
+    """
     again = input("Do yout want to play again(y/n): ")
 
     if again in ['y', 'yes', 'Y', "Yes"]:
         game()
     else:
         print("Good bye")
+
+def record(score):
+    """
+    Check the score, if it's top five highest
+    than
+    Write score, name, timenow into db
+
+    Args:
+        score: the score
+    """
+    # get the connection to db
+    c = conn.cursor()
+    
+    scores = []
+    for i in c.execute("SELECT score FROM score ORDER BY score LIMIT 5"):
+        scores.append(i[0])
+
+    #  if it's top 5 than add it into db
+    if (len(scores) < 5) or (score < scores[4]):
+        name = str(input("Please enter your name: "))
+        time_now = datetime.datetime.now()
+        c.execute("INSERT INTO score (score, name, time) VALUES ({score}, {name}, {time})".format(score=score, name=name, time=time_now))
+        conn.close()
 
 
 if __name__=="__main__":
