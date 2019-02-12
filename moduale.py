@@ -62,6 +62,8 @@ def game():
     guess = str(input('Guess a number: '))
     counter = 0
 
+    print(answer)
+
     # user will  get out the loop only when they have the right answer
     while guess != answer:
         
@@ -95,7 +97,7 @@ def again():
     if again in ['y', 'yes', 'Y', "Yes"]:
         game()
     else:
-        print("Good bye")
+        print_scores()
 
 def record(score):
     """
@@ -120,6 +122,11 @@ def record(score):
         c.execute("INSERT INTO score (score, name, time) VALUES ({score}, {name}, {time})".format(score=score, name=name, time=time_now))
         conn.close()
 
+def print_scores():
+    c = conn.cursor()
+
+    for i in c.execute("SELECT * FROM score ORDER BY score LIMIT 5"):
+        print(i)
 
 if __name__=="__main__":
     game()
