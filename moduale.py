@@ -76,14 +76,14 @@ def game():
         counter += 1
         a, b = check_answer(guess, answer)
         print("{a}A{b}B".format(a=a, b=b))
-        guess = str(input('Try another number: '))
+        guess = str(input   ('Try another number: '))
     
     print("Congragulation!")
 
     # record game score
     try:
         record(counter)
-    except:
+    except ValueError:
         pass
 
     again()
@@ -118,15 +118,18 @@ def record(score):
     #  if it's top 5 than add it into db
     if (len(scores) < 5) or (score < scores[4]):
         name = str(input("Please enter your name: "))
-        time_now = datetime.datetime.now()
-        c.execute("INSERT INTO score (score, name, time) VALUES ({score}, {name}, {time})".format(score=score, name=name, time=time_now))
-        conn.close()
+        query = "INSERT INTO score (score, name, time) VALUES ({}, '{}', datetime('now', 'localtime'))".format(score, name)
+        c.execute(query)
+        conn.commit()
+
 
 def print_scores():
     c = conn.cursor()
 
-    for i in c.execute("SELECT * FROM score ORDER BY score LIMIT 5"):
+    for i in c.execute("SELECT score, name, time FROM score ORDER BY score LIMIT 5"):
         print(i)
 
+    conn.close()
+    
 if __name__=="__main__":
-    game()
+    game()  
