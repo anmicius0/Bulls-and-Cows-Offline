@@ -27,12 +27,12 @@ def check_input(guess):
 
 def check_answer(guess, answer):
     """
-        Args:
-            guess: the number player guess (str)
-            answer: the answer (str)
-        Return:
-            a: a
-            b: b
+    Args:
+        guess: the number player guess (str)
+        answer: the answer (str)
+    Return:
+        a: a
+        b: b
     """
     a = 0
     b = 0
@@ -62,8 +62,6 @@ def game():
     guess = str(input('Guess a number: '))
     counter = 0
 
-    print(answer)
-
     # user will  get out the loop only when they have the right answer
     while guess != answer:
         
@@ -83,9 +81,10 @@ def game():
     # record game score
     try:
         record(counter)
-    except ValueError:
+    except:
         pass
 
+    # Do after game choice
     again()
 
 def again():
@@ -124,8 +123,10 @@ def record(score):
 
 
 def print_scores():
-    c = conn.cursor()
 
+    c = conn.cursor()
+    
+    # print out top chart 
     for i in c.execute("SELECT score, name, time FROM score ORDER BY score LIMIT 5"):
         print(i)
 
